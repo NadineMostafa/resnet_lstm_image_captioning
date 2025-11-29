@@ -8,9 +8,9 @@ class Vocab:
         self.tokenizer = Tokenizer()
         self.word2idx = {
             "<PAD>": 0,
-            "<SOS>": 1,
-            "<EOS>": 2,
-            "<UNK>": 3
+            "<UNK>": 1,
+            "<SOS>": 2,
+            "<EOS>": 3
         }
         self.idx2word = {idx: word for word, idx in self.word2idx.items()}
 

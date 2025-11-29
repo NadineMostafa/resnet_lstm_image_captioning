@@ -9,7 +9,7 @@ def collate_fn(batch):
     images, captions = zip(*batch)
     images = torch.stack(images)                       # preprocess returns tensor
     captions = [torch.tensor(c, dtype=torch.long) for c in captions]
-    captions_padded = pad_sequence(captions, batch_first=True, padding_value=[0])
+    captions_padded = pad_sequence(captions, batch_first=True, padding_value=0)
     return images, captions_padded
 
 def generate_hf_splits(dataset):
@@ -26,26 +26,29 @@ def generate_hf_splits(dataset):
     return dataset_train_hf, dataset_validation_hf, dataset_test_hf
 
 
-def generate_datasets(dataset_train_hf, dataset_validation_hf, dataset_test_hf, preprocess):
-    train_dataset = ImageCaptioningDataset(dataset_train_hf, transform=preprocess)
-    validation_dataset = ImageCaptioningDataset(dataset_validation_hf, transform=preprocess)
-    test_dataset = ImageCaptioningDataset(dataset_test_hf, transform=preprocess)
+def generate_datasets(dataset_train_hf, dataset_validation_hf, dataset_test_hf, vocab, tokenizer, preprocess=False):
+    train_dataset = ImageCaptioningDataset(dataset_train_hf, vocab, tokenizer, transform=preprocess)
+    validation_dataset = ImageCaptioningDataset(dataset_validation_hf, vocab, tokenizer, transform=preprocess)
+    test_dataset = ImageCaptioningDataset(dataset_test_hf, vocab, tokenizer, transform=preprocess)
 
     return train_dataset, validation_dataset, test_dataset
 
 def create_data_loaders(train_dataset, validation_dataset,batch_size, collate_fn):
-    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=2, collate_fn=collate_fn, drop_last=True)
-    validation_dataloader = DataLoader(validation_dataset, shuffle=True, batch_size=batch_size, num_workers=2, collate_fn=collate_fn, drop_last=True)
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=0, collate_fn=collate_fn, drop_last=True)
+    validation_dataloader = DataLoader(validation_dataset, shuffle=True, batch_size=batch_size, num_workers=0, collate_fn=collate_fn, drop_last=True)
 
     return train_dataloader, validation_dataloader
 
 def train_one_epoch(model, criterion, optimizer, train_dataloader, device, teacher_forcing_ratio, epoch, final_tf_ratio=0.7):
+    initial_teacher_forcing = 1.0
     if teacher_forcing_ratio > final_tf_ratio:  
-        teacher_forcing_ratio = teacher_forcing_ratio - 0.025
+        teacher_forcing_ratio = initial_teacher_forcing - (0.025 * epoch)
 
     loss_epoch_train = 0.0
     num_batches_train = 0
     model.train()
+
+    print(f"teacher forcing {teacher_forcing_ratio}")
       
     for images, captions in train_dataloader:
         images = images.to(device)

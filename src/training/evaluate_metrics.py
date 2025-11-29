@@ -38,7 +38,7 @@ if __name__ == "__main__":
     print("Dataset loaded.")
 
     All_captions = dataset.data.column("caption").to_pylist()
-    vocab = Vocab(All_captions)
+    vocab = Vocab()
     vocab.build_vocab(All_captions)
     vocab.build_mappings(min_freq=config.VOCAB_MIN_FREQ)
 
