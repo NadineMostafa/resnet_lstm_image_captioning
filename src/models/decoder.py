@@ -28,15 +28,15 @@ class Decoder(nn.Module):
             output = self.linear(lstm_out)  # (B, 1, vocab_size)
             outputs.append(output)
             
-        if self.training and teacher_forcing_ratio < 1.0:
-            use_teacher_forcing = random.random() < teacher_forcing_ratio
-            
-            if use_teacher_forcing:
-                input_token = self.embedding(captions[:, t+1].unsqueeze(1))
+            if self.training and teacher_forcing_ratio < 1.0:
+                use_teacher_forcing = random.random() < teacher_forcing_ratio
+                
+                if use_teacher_forcing:
+                    input_token = self.embedding(captions[:, t+1].unsqueeze(1))
+                else:
+                    predicted_token = output.argmax(dim=-1)
+                    input_token = self.embedding(predicted_token)
             else:
-                predicted_token = output.argmax(dim=-1)
-                input_token = self.embedding(predicted_token)
-        else:
-            input_token = self.embedding(captions[:, t+1].unsqueeze(1))
+                input_token = self.embedding(captions[:, t+1].unsqueeze(1))
         
         return torch.cat(outputs, dim=1)  # (B, seq_len-1, vocab_size)
