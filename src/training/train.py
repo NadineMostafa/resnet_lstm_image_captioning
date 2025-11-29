@@ -98,6 +98,6 @@ if __name__ == "__main__":
     plot_losses(training_loss_epochs, validation_loss_epochs, path="./../outputs/loss_plot.png")
     print(f"Best model saved at: {best_model_path}")
 
-    calculate_rouge(model, dataset_test_hf, output_path="./../outputs/rouge_results.txt")
+    calculate_rouge(model, vocab, device, preprocess, dataset_test_hf, output_path="./../outputs/rouge_results.txt")
 
 

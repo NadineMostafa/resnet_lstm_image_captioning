@@ -34,8 +34,8 @@ def generate_datasets(dataset_train_hf, dataset_validation_hf, dataset_test_hf, 
     return train_dataset, validation_dataset, test_dataset
 
 def create_data_loaders(train_dataset, validation_dataset,batch_size, collate_fn):
-    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=0, collate_fn=collate_fn, drop_last=True)
-    validation_dataloader = DataLoader(validation_dataset, shuffle=True, batch_size=batch_size, num_workers=0, collate_fn=collate_fn, drop_last=True)
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=2, collate_fn=collate_fn, drop_last=True)
+    validation_dataloader = DataLoader(validation_dataset, shuffle=True, batch_size=batch_size, num_workers=2, collate_fn=collate_fn, drop_last=True)
 
     return train_dataloader, validation_dataloader
 

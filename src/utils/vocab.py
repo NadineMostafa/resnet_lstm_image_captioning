@@ -24,7 +24,8 @@ class Vocab:
 
     def build_mappings(self, min_freq=5):
         idx = 4
-        for word, freq in self.word_freq.items():
+        for word in sorted(self.word_freq.keys()):
+            freq = self.word_freq[word]
             if freq >= min_freq:
                 self.word2idx[word] = idx
                 self.idx2word[idx] = word

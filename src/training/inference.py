@@ -45,7 +45,6 @@ def generate_caption(image, model, word2idx, idx2word, device, max_length=50, pr
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = torch.load("./../outputs/best_model.pt")
     dataset = load_dataset('nlphuji/flickr30k', split="test")
     print("Dataset loaded.")
 

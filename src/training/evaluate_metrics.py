@@ -7,12 +7,19 @@ from ..utils.utlis import generate_hf_splits
 from ..models.Image_captioning_model import ImageCaptioningModel
 from ..training.inference import generate_caption
 
-def calculate_rouge(model, test_split, output_path="./../outputs/rouge_results.txt"):
+def calculate_rouge(model,vocab, device, preprocess, test_split, output_path="./../outputs/rouge_results.txt"):
     model.eval()
-    predictions = list()
-    refs = list()
+    predictions = []
+    refs = []
     for instance in test_split:
-        caption = generate_caption(instance["image"], model, trans=True)
+        caption = generate_caption(
+            instance["image"],
+            model,
+            vocab.word2idx,
+            vocab.idx2word,
+            device,
+            preprocess=preprocess
+        )
         predictions.append(caption)
         refs.append(instance["caption"][0])
 
@@ -32,8 +39,11 @@ def calculate_rouge(model, test_split, output_path="./../outputs/rouge_results.t
     print(results)
 
 if __name__ == "__main__":
+    from torchvision.models import ResNet50_Weights
     dataset = load_dataset('nlphuji/flickr30k', split="test")
     _, _, test_split = generate_hf_splits(dataset)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    preprocess = ResNet50_Weights.DEFAULT.transforms()
 
     print("Dataset loaded.")
 
@@ -48,5 +58,4 @@ if __name__ == "__main__":
     model = ImageCaptioningModel(embed_size=config.EMBED_SIZE, vocab_size=len(vocab), hidden_size=config.HIDDEN_SIZE)
     model.load_state_dict(torch.load("./../outputs/best_model.pt"))
 
-    calculate_rouge(model, test_split)
-
+    calculate_rouge(model,vocab, device, preprocess, test_split)
