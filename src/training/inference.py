@@ -14,6 +14,7 @@ def generate_caption(image, model, word2idx, idx2word, device, max_length=50, pr
     
     if image.dim() == 3:
         image = image.unsqueeze(0)
+        
     image = image.to(device)
     
     with torch.no_grad():

@@ -9,6 +9,7 @@ from ..training.inference import generate_caption
 
 def calculate_rouge(model,vocab, device, preprocess, test_split, output_path="./../outputs/rouge_results.txt"):
     model.eval()
+    model.to(device)
     predictions = []
     refs = []
     for instance in test_split:
