@@ -1,3 +1,4 @@
+import os
 import torch
 import evaluate
 from datasets import load_dataset
@@ -8,7 +9,7 @@ from ..utils.utlis import generate_hf_splits
 from ..models.Image_captioning_model import ImageCaptioningModel
 from ..training.inference import generate_caption
 
-def calculate_rouge(model, vocab, device, preprocess, test_split, output_path="./../outputs/rouge_results.txt"):
+def calculate_rouge(model, vocab, device, preprocess, test_split, output_dir=config.OUTPUT_DIR):
     """
     Calculate ROUGE scores for model-generated captions.
 
@@ -45,7 +46,8 @@ def calculate_rouge(model, vocab, device, preprocess, test_split, output_path=".
     use_stemmer=True
     )
 
-    with open(output_path, "w") as f:
+    results_file = os.path.join(output_dir, "rouge_results.txt")
+    with open(results_file, "w") as f:
         for key, value in results.items():
             f.write(f"{key}: {value}\n")
 
@@ -72,6 +74,6 @@ if __name__ == "__main__":
     print(f"Vocabulary size: {len(vocab)}")
 
     model = ImageCaptioningModel(embed_size=config.EMBED_SIZE, vocab_size=len(vocab), hidden_size=config.HIDDEN_SIZE)
-    model.load_state_dict(torch.load("./../outputs/best_model.pt"))
+    model.load_state_dict(torch.load(os.path.join(config.OUTPUT_DIR, "best_model.pt")))
 
     calculate_rouge(model,vocab, device, preprocess, test_split)

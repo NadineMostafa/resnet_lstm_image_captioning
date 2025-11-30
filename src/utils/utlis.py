@@ -1,7 +1,9 @@
+import os
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
+from ..config import config
 from ..data.dataset import ImageCaptioningDataset
 
 
@@ -191,14 +193,14 @@ def validate_one_epoch(model, criterion, validation_dataloader, device):
     return avg_loss_epoch_validation
 
 
-def plot_losses(training_losses, validation_losses, path="./../outputs/training_and_validation_losses.png"):
+def plot_losses(training_losses, validation_losses, parent_dir=config.OUTPUT_DIR):
     """
     Plot training and validation losses over epochs.
 
     Args:
         training_losses (list): List of training losses for each epoch.
         validation_losses (list): List of validation losses for each epoch.
-        path (str, optional): Path to save the plot. Defaults to "./../outputs/training_and_validation_losses.png".
+        path (str, optional): Path to save the plot. Defaults to os.path.join(config.OUTPUT_DIR, "training_and_validation_losses.png").
     """
     epochs = range(1, len(training_losses) + 1)
 
@@ -208,6 +210,6 @@ def plot_losses(training_losses, validation_losses, path="./../outputs/training_
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig(path)
+    plt.savefig(os.path.join(parent_dir, "training_and_validation_losses.png"))
     plt.close()
 

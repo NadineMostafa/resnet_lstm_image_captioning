@@ -1,3 +1,4 @@
+import os
 import torch
 from PIL import Image
 from datasets import load_dataset
@@ -79,7 +80,7 @@ if __name__ == "__main__":
 
     # Load model
     model = ImageCaptioningModel(embed_size=config.EMBED_SIZE, vocab_size=len(vocab), hidden_size=config.HIDDEN_SIZE)
-    model.load_state_dict(torch.load("./../outputs/best_model.pt"))
+    model.load_state_dict(torch.load(os.path.join(config.OUTPUT_DIR, "best_model.pt")))
     model = model.to(device)
 
     preprocess = ResNet50_Weights.DEFAULT.transforms()

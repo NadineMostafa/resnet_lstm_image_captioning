@@ -4,5 +4,6 @@ VOCAB_MIN_FREQ = 5
 BATCH_SIZE = 64
 NUM_EPOCHS = 50
 LEARNING_RATE = 0.001
+OUTPUT_DIR = "./../../outputs/"
 
 

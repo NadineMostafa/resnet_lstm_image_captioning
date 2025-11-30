@@ -24,10 +24,8 @@ if __name__ == "__main__":
     """
 
     # Paths for saving outputs
-    os.makedirs("./../outputs", exist_ok=True)
-    best_model_path = "./../outputs/best_model.pt"
-    loss_plot_path = "./../outputs/loss_plot.png"
-    rouge_results_path = "./../outputs/rouge_results.txt"
+    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
+    best_model_path = os.path.join(config.OUTPUT_DIR, "best_model.pt")
 
     # Load dataset
     dataset = load_dataset('nlphuji/flickr30k', split="test")
@@ -113,9 +111,9 @@ if __name__ == "__main__":
     print("Training complete.")
     print(f"Training losses over epochs: {training_loss_epochs}")
     print(f"Validation losses over epochs: {validation_loss_epochs}")
-    plot_losses(training_loss_epochs, validation_loss_epochs, path=loss_plot_path)
+    plot_losses(training_loss_epochs, validation_loss_epochs, parent_dir=config.OUTPUT_DIR)
     print(f"Best model saved at: {best_model_path}")
 
     # Evaluate model
-    calculate_rouge(model, vocab, device, preprocess, dataset_test_hf, output_path=rouge_results_path)
+    calculate_rouge(model, vocab, device, preprocess, dataset_test_hf, output_dir=config.OUTPUT_DIR)
 
