@@ -13,6 +13,11 @@ from .evaluate_metrics import calculate_rouge
 if __name__ == "__main__":
 
     os.makedirs("./../outputs", exist_ok=True)
+    best_model_path = "./../outputs/best_model.pt"
+    loss_plot_path = "./../outputs/loss_plot.png"
+    rouge_results_path = "./../outputs/rouge_results.txt"
+
+
     
     dataset = load_dataset('nlphuji/flickr30k', split="test")
     print("Dataset loaded.")
@@ -65,7 +70,7 @@ if __name__ == "__main__":
     teacher_forcing_ratio = 1
     best_val_loss = float('inf')
     epochs_no_improve = 0
-    best_model_path = "./../outputs/best_model.pt"
+
 
 
     for epoch in range(0, config.NUM_EPOCHS):
@@ -95,9 +100,8 @@ if __name__ == "__main__":
     print("Training complete.")
     print(f"Training losses over epochs: {training_loss_epochs}")
     print(f"Validation losses over epochs: {validation_loss_epochs}")
-    plot_losses(training_loss_epochs, validation_loss_epochs, path="./../outputs/loss_plot.png")
+    plot_losses(training_loss_epochs, validation_loss_epochs, path=loss_plot_path)
     print(f"Best model saved at: {best_model_path}")
 
-    calculate_rouge(model, vocab, device, preprocess, dataset_test_hf, output_path="./../outputs/rouge_results.txt")
-
+    calculate_rouge(model, vocab, device, preprocess, dataset_test_hf, output_path=rouge_results_path)
 

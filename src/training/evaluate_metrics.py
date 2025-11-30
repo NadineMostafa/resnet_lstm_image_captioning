@@ -12,8 +12,9 @@ def calculate_rouge(model,vocab, device, preprocess, test_split, output_path="./
     predictions = []
     refs = []
     for instance in test_split:
+        instance_image = instance["image"].to(device)
         caption = generate_caption(
-            instance["image"],
+            instance_image,
             model,
             vocab.word2idx,
             vocab.idx2word,
