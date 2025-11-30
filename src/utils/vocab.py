@@ -2,7 +2,14 @@ from collections import Counter
 from .tokenizer import Tokenizer
 
 class Vocab:
+    """
+    A vocabulary class for building word-to-index and index-to-word mappings.
+    """
+
     def __init__(self):
+        """
+        Initialize the vocabulary with special tokens and a tokenizer.
+        """
         self.word_freq = Counter()
         self.all_tokens = list()
         self.tokenizer = Tokenizer()
@@ -15,6 +22,12 @@ class Vocab:
         self.idx2word = {idx: word for word, idx in self.word2idx.items()}
 
     def build_vocab(self, captions):
+        """
+        Build the vocabulary by counting word frequencies from captions.
+
+        Args:
+            captions (list): A list of caption lists to process.
+        """
         for caption in captions:
             for sentence in caption:
                 tokens = self.tokenizer.tokenize(sentence.lower())
@@ -23,6 +36,12 @@ class Vocab:
         self.word_freq = Counter(self.all_tokens)
 
     def build_mappings(self, min_freq=5):
+        """
+        Create word-to-index and index-to-word mappings based on word frequency.
+
+        Args:
+            min_freq (int): Minimum frequency for a word to be included in the vocabulary.
+        """
         idx = 4
         for word in sorted(self.word_freq.keys()):
             freq = self.word_freq[word]

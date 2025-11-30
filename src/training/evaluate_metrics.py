@@ -1,13 +1,25 @@
 import torch
 import evaluate
 from datasets import load_dataset
+from torchvision.models import ResNet50_Weights
 from ..config import config
 from ..utils.vocab import Vocab
 from ..utils.utlis import generate_hf_splits
 from ..models.Image_captioning_model import ImageCaptioningModel
 from ..training.inference import generate_caption
 
-def calculate_rouge(model,vocab, device, preprocess, test_split, output_path="./../outputs/rouge_results.txt"):
+def calculate_rouge(model, vocab, device, preprocess, test_split, output_path="./../outputs/rouge_results.txt"):
+    """
+    Calculate ROUGE scores for model-generated captions.
+
+    Args:
+        model (nn.Module): Trained image captioning model.
+        vocab (Vocab): Vocabulary object for word-to-index mapping.
+        device (torch.device): Device to run the model on (CPU/GPU).
+        preprocess (callable): Preprocessing transformations for images.
+        test_split (Dataset): Test dataset split.
+        output_path (str, optional): Path to save the ROUGE results. Defaults to "./../outputs/rouge_results.txt".
+    """
     model.eval()
     model.to(device)
     predictions = []
@@ -39,8 +51,11 @@ def calculate_rouge(model,vocab, device, preprocess, test_split, output_path="./
 
     print(results)
 
+
 if __name__ == "__main__":
-    from torchvision.models import ResNet50_Weights
+    """
+    Main script to evaluate the model on the test dataset and calculate ROUGE scores.
+    """
     dataset = load_dataset('nlphuji/flickr30k', split="test")
     _, _, test_split = generate_hf_splits(dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

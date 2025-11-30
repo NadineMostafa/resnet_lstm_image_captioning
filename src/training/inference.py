@@ -7,6 +7,21 @@ from torchvision.models import ResNet50_Weights
 from ..models.Image_captioning_model import ImageCaptioningModel
 
 def generate_caption(image, model, word2idx, idx2word, device, max_length=50, preprocess=None):
+    """
+    Generate a caption for a given image using the trained model.
+
+    Args:
+        image (PIL.Image or Tensor): Input image to generate a caption for.
+        model (nn.Module): Trained image captioning model.
+        word2idx (dict): Mapping of words to their corresponding indices.
+        idx2word (dict): Mapping of indices to their corresponding words.
+        device (torch.device): Device to run the model on (CPU/GPU).
+        max_length (int, optional): Maximum length of the generated caption. Defaults to 50.
+        preprocess (callable, optional): Preprocessing transformations for the image. Defaults to None.
+
+    Returns:
+        str: Generated caption as a string.
+    """
     model.eval()
     
     if preprocess:
@@ -44,30 +59,39 @@ def generate_caption(image, model, word2idx, idx2word, device, max_length=50, pr
         return " ".join(words)
     
 if __name__ == "__main__":
+    """
+    Main script to generate captions for an image using a trained model.
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # Load dataset
     dataset = load_dataset('nlphuji/flickr30k', split="test")
     print("Dataset loaded.")
 
-    All_captions = dataset.data.column("caption").to_pylist()
+    # Build vocabulary
+    all_captions = dataset.data.column("caption").to_pylist()
     vocab = Vocab()
-    vocab.build_vocab(All_captions)
+    vocab.build_vocab(all_captions)
     vocab.build_mappings(min_freq=config.VOCAB_MIN_FREQ)
 
     print("Vocabulary built.")
     print(f"Vocabulary size: {len(vocab)}")
 
+    # Load model
     model = ImageCaptioningModel(embed_size=config.EMBED_SIZE, vocab_size=len(vocab), hidden_size=config.HIDDEN_SIZE)
     model.load_state_dict(torch.load("./../outputs/best_model.pt"))
     model = model.to(device)
 
     preprocess = ResNet50_Weights.DEFAULT.transforms()
 
+    # Load image
     image_path = ""
     if image_path:
         image = Image.open(image_path).convert("RGB")
-    else: image = dataset[0]["image"]
+    else:
+        image = dataset[0]["image"]
 
-    genereated_caption = generate_caption(image, model, vocab.word2idx, vocab.idx2word, device, preprocess=preprocess)
-    print(f"Generated Caption: {genereated_caption}")
+    # Generate caption
+    generated_caption = generate_caption(image, model, vocab.word2idx, vocab.idx2word, device, preprocess=preprocess)
+    print(f"Generated Caption: {generated_caption}")
 
